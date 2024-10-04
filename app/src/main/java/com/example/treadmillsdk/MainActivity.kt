@@ -49,12 +49,14 @@ class MainActivity : Activity() {
         btnSpeed.setOnClickListener {
             currentSpeed += 0.5f // Aumenta a velocidade em 0.5 Km/h
             setTreadmillSpeed(currentSpeed)
+            //startTreadmill()
             Toast.makeText(this, "Velocidade ajustada para $currentSpeed Km/h", Toast.LENGTH_SHORT).show()
         }
 
         btnInclination.setOnClickListener {
             currentInclination += 1.0f // Aumenta a inclinação em 1%
             setTreadmillInclination(currentInclination)
+            //stopTreadmill()
             Toast.makeText(this, "Inclinação ajustada para $currentInclination%", Toast.LENGTH_SHORT).show()
         }
     }
@@ -189,7 +191,7 @@ class MainActivity : Activity() {
             val controlPointChar = it.getCharacteristic(FITNESS_MACHINE_CONTROL_POINT_UUID)
             if (controlPointChar != null) {
                 val speedValue = (speed * 100).toInt()
-                val command = byteArrayOf(0x03, (speedValue and 0xFF).toByte(), ((speedValue shr 8) and 0xFF).toByte())
+                val command = byteArrayOf(0x02, (speedValue and 0xFF).toByte(), ((speedValue shr 8) and 0xFF).toByte())
                 controlPointChar.value = command
                 bluetoothGatt?.writeCharacteristic(controlPointChar)
                 Log.d(TAG, "Comando de ajuste de velocidade enviado: $speed Km/h")
@@ -204,10 +206,44 @@ class MainActivity : Activity() {
             val controlPointChar = it.getCharacteristic(FITNESS_MACHINE_CONTROL_POINT_UUID)
             if (controlPointChar != null) {
                 val inclinationValue = (inclination * 10).toInt()
-                val command = byteArrayOf(0x05, (inclinationValue and 0xFF).toByte(), ((inclinationValue shr 8) and 0xFF).toByte())
+                val command = byteArrayOf(0x03, (inclinationValue and 0xFF).toByte(), ((inclinationValue shr 8) and 0xFF).toByte())
                 controlPointChar.value = command
                 bluetoothGatt?.writeCharacteristic(controlPointChar)
                 Log.d(TAG, "Comando de ajuste de inclinação enviado: $inclination%")
+            }
+        }
+    }
+
+    // Função para iniciar a esteira
+    private fun startTreadmill() {
+        val fitnessService = bluetoothGatt?.getService(FITNESS_MACHINE_SERVICE_UUID)
+        fitnessService?.let {
+            val controlPointChar = it.getCharacteristic(FITNESS_MACHINE_CONTROL_POINT_UUID)
+            if (controlPointChar != null) {
+                // Código de operação para iniciar a esteira (0x01 é o opcode para Start/Resume)
+                val command = byteArrayOf(0x07)
+                controlPointChar.value = command
+                bluetoothGatt?.writeCharacteristic(controlPointChar)
+                Log.d(TAG, "Comando para iniciar a esteira enviado.")
+            } else {
+                Log.w(TAG, "Característica de controle não encontrada.")
+            }
+        }
+    }
+
+    // Função para parar a esteira
+    private fun stopTreadmill() {
+        val fitnessService = bluetoothGatt?.getService(FITNESS_MACHINE_SERVICE_UUID)
+        fitnessService?.let {
+            val controlPointChar = it.getCharacteristic(FITNESS_MACHINE_CONTROL_POINT_UUID)
+            if (controlPointChar != null) {
+                // Código de operação para parar a esteira (0x02 é o opcode para Stop/Pause)
+                val command = byteArrayOf(0x08)
+                controlPointChar.value = command
+                bluetoothGatt?.writeCharacteristic(controlPointChar)
+                Log.d(TAG, "Comando para parar a esteira enviado.")
+            } else {
+                Log.w(TAG, "Característica de controle não encontrada.")
             }
         }
     }
