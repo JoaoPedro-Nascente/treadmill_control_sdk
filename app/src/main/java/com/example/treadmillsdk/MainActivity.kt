@@ -12,6 +12,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -32,7 +33,7 @@ class MainActivity : Activity() {
     private val TREADMILL_DATA_CHAR_UUID = UUID.fromString("00002acd-0000-1000-8000-00805f9b34fb")
 
     // Variáveis de controle
-    private var currentSpeed: Float = 5.0f // Velocidade inicial em Km/h
+    private var currentSpeed: Float = 1.0f // Velocidade inicial em Km/h
     private var currentInclination: Float = 0.0f // Inclinação inicial em %
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,20 +44,116 @@ class MainActivity : Activity() {
         checkBluetoothPermissions()
 
         // Configuração dos botões
-        val btnSpeed = findViewById<Button>(R.id.btn_speed)
-        val btnInclination = findViewById<Button>(R.id.btn_inclination)
+        val btnStartTreadmill = findViewById<Button>(R.id.btn_start)
+        val btnStopTreadmill = findViewById<Button>(R.id.btn_stop)
 
-        btnSpeed.setOnClickListener {
+        val btnSpeedUp = findViewById<ImageButton>(R.id.btn_speedup)
+        val btnSpeedDown = findViewById<ImageButton>(R.id.btn_speeddown)
+        val btnSetSpeed15 = findViewById<Button>(R.id.btn_setspeed15)
+        val btnSetSpeed12 = findViewById<Button>(R.id.btn_setspeed12)
+        val btnSetSpeed9 = findViewById<Button>(R.id.btn_setspeed9)
+        val btnSetSpeed6 = findViewById<Button>(R.id.btn_setspeed6)
+
+        val btnInclinationUp = findViewById<ImageButton>(R.id.btn_inclinationup)
+        val btnInclinationDown = findViewById<ImageButton>(R.id.btn_inclinationdown)
+        val btnSetInclination15 = findViewById<Button>(R.id.btn_setinclination15)
+        val btnSetInclination12 = findViewById<Button>(R.id.btn_setinclination12)
+        val btnSetInclination9 = findViewById<Button>(R.id.btn_setinclination9)
+        val btnSetInclination6 = findViewById<Button>(R.id.btn_setinclination6)
+
+        // Controles de inicio e pausa
+        btnStartTreadmill.setOnClickListener {
+            startTreadmill()
+        }
+
+        btnStopTreadmill.setOnClickListener {
+            stopTreadmill()
+        }
+
+        // Controles de velocidade
+        btnSpeedUp.setOnClickListener {
             currentSpeed += 0.5f // Aumenta a velocidade em 0.5 Km/h
+            if(currentSpeed > 18.0f){
+                currentSpeed = 18.0f
+            }
             setTreadmillSpeed(currentSpeed)
-            //startTreadmill()
             Toast.makeText(this, "Velocidade ajustada para $currentSpeed Km/h", Toast.LENGTH_SHORT).show()
         }
 
-        btnInclination.setOnClickListener {
+        btnSpeedDown.setOnClickListener {
+            currentSpeed -= 0.5f // Diminui a velocidade em 0.5 Km/h
+            if(currentSpeed < 1.0f){
+                currentSpeed = 1.0f
+            }
+            setTreadmillSpeed(currentSpeed)
+            Toast.makeText(this, "Velocidade ajustada para $currentSpeed Km/h", Toast.LENGTH_SHORT).show()
+        }
+
+        btnSetSpeed15.setOnClickListener {
+            currentSpeed = 15.0f
+            setTreadmillSpeed(currentSpeed)
+            Toast.makeText(this, "Velocidade ajustada para $currentSpeed Km/h", Toast.LENGTH_SHORT).show()
+        }
+
+        btnSetSpeed12.setOnClickListener {
+            currentSpeed = 12.0f
+            setTreadmillSpeed(currentSpeed)
+            Toast.makeText(this, "Velocidade ajustada para $currentSpeed Km/h", Toast.LENGTH_SHORT).show()
+        }
+
+        btnSetSpeed9.setOnClickListener {
+            currentSpeed = 9.0f
+            setTreadmillSpeed(currentSpeed)
+            Toast.makeText(this, "Velocidade ajustada para $currentSpeed Km/h", Toast.LENGTH_SHORT).show()
+        }
+
+        btnSetSpeed6.setOnClickListener {
+            currentSpeed = 6.0f
+            setTreadmillSpeed(currentSpeed)
+            Toast.makeText(this, "Velocidade ajustada para $currentSpeed Km/h", Toast.LENGTH_SHORT).show()
+        }
+
+
+        // Controles de inclinação
+        btnInclinationUp.setOnClickListener {
             currentInclination += 1.0f // Aumenta a inclinação em 1%
+            if(currentInclination > 15.0f){
+                currentInclination = 15.0f
+            }
             setTreadmillInclination(currentInclination)
-            //stopTreadmill()
+            Toast.makeText(this, "Inclinação ajustada para $currentInclination%", Toast.LENGTH_SHORT).show()
+        }
+
+        btnInclinationDown.setOnClickListener {
+            currentInclination -= 1.0f // Diminui a inclinação em 1%
+            if(currentInclination < 0.0f){
+                currentInclination = 0.0f
+            }
+            setTreadmillInclination(currentInclination)
+            Toast.makeText(this, "Inclinação ajustada para $currentInclination%", Toast.LENGTH_SHORT).show()
+        }
+
+        btnSetInclination15.setOnClickListener {
+            currentInclination = 15.0f
+            setTreadmillInclination(currentInclination)
+            Toast.makeText(this, "Inclinação ajustada para $currentInclination%", Toast.LENGTH_SHORT).show()
+        }
+
+        btnSetInclination12.setOnClickListener {
+            currentInclination = 12.0f
+            setTreadmillInclination(currentInclination)
+            Toast.makeText(this, "Inclinação ajustada para $currentInclination%", Toast.LENGTH_SHORT).show()
+        }
+
+        btnSetInclination9.setOnClickListener {
+            currentInclination = 9.0f
+            setTreadmillInclination(currentInclination)
+            Toast.makeText(this, "Inclinação ajustada para $currentInclination%", Toast.LENGTH_SHORT).show()
+        }
+
+        btnSetInclination6.setOnClickListener {
+            currentInclination = 6.0f
+            setTreadmillInclination(currentInclination)
             Toast.makeText(this, "Inclinação ajustada para $currentInclination%", Toast.LENGTH_SHORT).show()
         }
     }
