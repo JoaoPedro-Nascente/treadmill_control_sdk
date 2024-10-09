@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FF0000"
+    android:background="#000000"
     android:backgroundTint="#0F0F0F"
     android:orientation="vertical"
     android:padding="16dp">
@@ -50,28 +50,6 @@
             app:layout_constraintStart_toEndOf="@+id/btn_start"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
-                android:id="@+id/btn_inclinationup"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:background="@drawable/roundedbutton"
-                android:backgroundTint="#474747"
-                android:foregroundTint="#FFFFFF"
-                android:tint="#FFFFFF"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@android:drawable/arrow_up_float" />
-
-            <ImageButton
-                android:id="@+id/btn_speeddown"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:background="@drawable/roundedbutton"
-                android:backgroundTint="#474747"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:srcCompat="@android:drawable/arrow_down_float" />
-
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
@@ -82,6 +60,30 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/btn_inclinationdown"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@drawable/roundedbutton"
+                android:backgroundTint="#474747"
+                android:text="-"
+                android:textColor="#FFFFFF"
+                android:textSize="48sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <Button
+                android:id="@+id/btn_inclinationup"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@drawable/roundedbutton"
+                android:backgroundTint="#474747"
+                android:text="+"
+                android:textColor="#FFFFFF"
+                android:textSize="48sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -94,29 +96,6 @@
             app:layout_constraintEnd_toStartOf="@+id/btn_stop"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
-                android:id="@+id/btn_speedup"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:background="@drawable/roundedbutton"
-                android:backgroundTint="#474747"
-                android:foregroundTint="#FFFFFF"
-                android:tint="#FFFFFF"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@android:drawable/arrow_up_float" />
-
-            <ImageButton
-                android:id="@+id/btn_inclinationdown"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:background="@drawable/roundedbutton"
-                android:backgroundTint="#474747"
-                android:tint="#FFFFFF"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:srcCompat="@android:drawable/arrow_down_float" />
-
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
@@ -127,6 +106,30 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/btn_speeddown"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@drawable/roundedbutton"
+                android:backgroundTint="#474747"
+                android:text="-"
+                android:textColor="#FFFFFF"
+                android:textSize="48sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <Button
+                android:id="@+id/btn_speedup"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@drawable/roundedbutton"
+                android:backgroundTint="#474747"
+                android:text="+"
+                android:textColor="#FFFFFF"
+                android:textSize="48sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -265,5 +268,15 @@
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:id="@+id/btn_connect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Conectar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -41,33 +41,41 @@ class MainActivity : Activity() {
         setContentView(R.layout.activity_main)
 
         // Verificar e solicitar permissões Bluetooth
-        checkBluetoothPermissions()
+        //checkBluetoothPermissions()
 
         // Configuração dos botões
+        val btnConnectTreadmill = findViewById<Button>(R.id.btn_connect)
         val btnStartTreadmill = findViewById<Button>(R.id.btn_start)
         val btnStopTreadmill = findViewById<Button>(R.id.btn_stop)
 
-        val btnSpeedUp = findViewById<ImageButton>(R.id.btn_speedup)
-        val btnSpeedDown = findViewById<ImageButton>(R.id.btn_speeddown)
+        val btnSpeedUp = findViewById<Button>(R.id.btn_speedup)
+        val btnSpeedDown = findViewById<Button>(R.id.btn_speeddown)
         val btnSetSpeed15 = findViewById<Button>(R.id.btn_setspeed15)
         val btnSetSpeed12 = findViewById<Button>(R.id.btn_setspeed12)
         val btnSetSpeed9 = findViewById<Button>(R.id.btn_setspeed9)
         val btnSetSpeed6 = findViewById<Button>(R.id.btn_setspeed6)
 
-        val btnInclinationUp = findViewById<ImageButton>(R.id.btn_inclinationup)
-        val btnInclinationDown = findViewById<ImageButton>(R.id.btn_inclinationdown)
+        val btnInclinationUp = findViewById<Button>(R.id.btn_inclinationup)
+        val btnInclinationDown = findViewById<Button>(R.id.btn_inclinationdown)
         val btnSetInclination15 = findViewById<Button>(R.id.btn_setinclination15)
         val btnSetInclination12 = findViewById<Button>(R.id.btn_setinclination12)
         val btnSetInclination9 = findViewById<Button>(R.id.btn_setinclination9)
         val btnSetInclination6 = findViewById<Button>(R.id.btn_setinclination6)
 
         // Controles de inicio e pausa
+        btnConnectTreadmill.setOnClickListener {
+            checkBluetoothPermissions()
+        }
+
         btnStartTreadmill.setOnClickListener {
             startTreadmill()
         }
 
         btnStopTreadmill.setOnClickListener {
             stopTreadmill()
+
+            currentSpeed = 1.0f
+            currentInclination = 0.0f
         }
 
         // Controles de velocidade
