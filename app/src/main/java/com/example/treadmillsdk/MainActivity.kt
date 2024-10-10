@@ -40,9 +40,6 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Verificar e solicitar permissões Bluetooth
-        //checkBluetoothPermissions()
-
         // Configuração dos botões
         val btnConnectTreadmill = findViewById<Button>(R.id.btn_connect)
         val btnStartTreadmill = findViewById<Button>(R.id.btn_start)
@@ -80,89 +77,91 @@ class MainActivity : Activity() {
 
         // Controles de velocidade
         btnSpeedUp.setOnClickListener {
-            currentSpeed += 0.5f // Aumenta a velocidade em 0.5 Km/h
-            if(currentSpeed > 18.0f){
-                currentSpeed = 18.0f
+            var speed = currentSpeed + 0.1f
+            //currentSpeed += 0.5f // Aumenta a velocidade em 0.5 Km/h
+            if(speed > 18.0f){
+                speed = 18.0f
             }
-            setTreadmillSpeed(currentSpeed)
-            Toast.makeText(this, "Velocidade ajustada para $currentSpeed Km/h", Toast.LENGTH_SHORT).show()
+            setTreadmillSpeed(speed)
+            Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
         }
 
         btnSpeedDown.setOnClickListener {
-            currentSpeed -= 0.5f // Diminui a velocidade em 0.5 Km/h
-            if(currentSpeed < 1.0f){
-                currentSpeed = 1.0f
+            var speed = currentSpeed - 0.1f
+            //currentSpeed -= 0.5f // Diminui a velocidade em 0.5 Km/h
+            if(speed < 1.0f){
+                speed = 1.0f
             }
-            setTreadmillSpeed(currentSpeed)
-            Toast.makeText(this, "Velocidade ajustada para $currentSpeed Km/h", Toast.LENGTH_SHORT).show()
+            setTreadmillSpeed(speed)
+            Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
         }
 
         btnSetSpeed15.setOnClickListener {
-            currentSpeed = 15.0f
-            setTreadmillSpeed(currentSpeed)
-            Toast.makeText(this, "Velocidade ajustada para $currentSpeed Km/h", Toast.LENGTH_SHORT).show()
+            val speed = 15.0f
+            setTreadmillSpeed(speed)
+            Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
         }
 
         btnSetSpeed12.setOnClickListener {
-            currentSpeed = 12.0f
-            setTreadmillSpeed(currentSpeed)
-            Toast.makeText(this, "Velocidade ajustada para $currentSpeed Km/h", Toast.LENGTH_SHORT).show()
+            val speed = 12.0f
+            setTreadmillSpeed(speed)
+            Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
         }
 
         btnSetSpeed9.setOnClickListener {
-            currentSpeed = 9.0f
-            setTreadmillSpeed(currentSpeed)
-            Toast.makeText(this, "Velocidade ajustada para $currentSpeed Km/h", Toast.LENGTH_SHORT).show()
+            val speed = 9.0f
+            setTreadmillSpeed(speed)
+            Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
         }
 
         btnSetSpeed6.setOnClickListener {
-            currentSpeed = 6.0f
-            setTreadmillSpeed(currentSpeed)
-            Toast.makeText(this, "Velocidade ajustada para $currentSpeed Km/h", Toast.LENGTH_SHORT).show()
+            val speed = 6.0f
+            setTreadmillSpeed(speed)
+            Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
         }
 
 
         // Controles de inclinação
         btnInclinationUp.setOnClickListener {
-            currentInclination += 1.0f // Aumenta a inclinação em 1%
-            if(currentInclination > 15.0f){
-                currentInclination = 15.0f
+            var inclination = currentInclination + 1.0f // Aumenta a inclinação em 1%
+            if(inclination > 15.0f){
+                inclination = 15.0f
             }
-            setTreadmillInclination(currentInclination)
-            Toast.makeText(this, "Inclinação ajustada para $currentInclination%", Toast.LENGTH_SHORT).show()
+            setTreadmillInclination(inclination)
+            Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
         }
 
         btnInclinationDown.setOnClickListener {
-            currentInclination -= 1.0f // Diminui a inclinação em 1%
-            if(currentInclination < 0.0f){
-                currentInclination = 0.0f
+            var inclination = currentInclination - 1.0f // Diminui a inclinação em 1%
+            if(inclination < 0.0f){
+                inclination = 0.0f
             }
-            setTreadmillInclination(currentInclination)
-            Toast.makeText(this, "Inclinação ajustada para $currentInclination%", Toast.LENGTH_SHORT).show()
+            setTreadmillInclination(inclination)
+            Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
         }
 
         btnSetInclination15.setOnClickListener {
-            currentInclination = 15.0f
-            setTreadmillInclination(currentInclination)
-            Toast.makeText(this, "Inclinação ajustada para $currentInclination%", Toast.LENGTH_SHORT).show()
+            val inclination = 15.0f
+            setTreadmillInclination(inclination)
+            Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
         }
 
         btnSetInclination12.setOnClickListener {
-            currentInclination = 12.0f
-            setTreadmillInclination(currentInclination)
-            Toast.makeText(this, "Inclinação ajustada para $currentInclination%", Toast.LENGTH_SHORT).show()
+            val inclination = 12.0f
+            setTreadmillInclination(inclination)
+            Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
         }
 
         btnSetInclination9.setOnClickListener {
-            currentInclination = 9.0f
-            setTreadmillInclination(currentInclination)
-            Toast.makeText(this, "Inclinação ajustada para $currentInclination%", Toast.LENGTH_SHORT).show()
+            val inclination = 9.0f
+            setTreadmillInclination(inclination)
+            Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
         }
 
         btnSetInclination6.setOnClickListener {
-            currentInclination = 6.0f
-            setTreadmillInclination(currentInclination)
-            Toast.makeText(this, "Inclinação ajustada para $currentInclination%", Toast.LENGTH_SHORT).show()
+            val inclination = 6.0f
+            setTreadmillInclination(inclination)
+            Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -283,9 +282,96 @@ class MainActivity : Activity() {
         override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.i(TAG, "Serviços GATT descobertos com sucesso.")
+
+                val fitnessService = gatt?.getService(FITNESS_MACHINE_SERVICE_UUID)
+                if(fitnessService != null) {
+                    val treadmillDataChar = fitnessService.getCharacteristic(TREADMILL_DATA_CHAR_UUID)
+                    if (treadmillDataChar != null) {
+                        gatt.setCharacteristicNotification(treadmillDataChar, true)
+
+                        val descriptor = treadmillDataChar.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"))
+                        descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                        gatt.writeDescriptor(descriptor)
+
+                        Log.i(TAG, "Inscrito para receber notificações da esteira")
+                    } else {
+                        Log.w(TAG, "Caracteristica de dados da esteira não encontrada")
+                    }
+                } else {
+                    Log.w(TAG, "Serviço de dados da esteira não encontrado")
+                }
             } else {
                 Log.w(TAG, "Erro ao descobrir serviços GATT. Status: $status")
             }
+        }
+
+        override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
+            characteristic?.let {
+                if (it.uuid == TREADMILL_DATA_CHAR_UUID) {
+                    // Extraer los datos de la caminadora
+                    val treadmillData = it.value
+
+                    // Registrar los datos brutos en hexadecimal para análisis
+                    val hexData = treadmillData.joinToString(" ") { byte -> String.format("%02X", byte) }
+                    Log.i(TAG, "Datos brutos de la caminadora: $hexData")
+
+                    // Decodificar los datos recibidos
+                    processTreadmillData(treadmillData)
+                }
+            }
+        }
+    }
+
+    private fun processTreadmillData(data: ByteArray) {
+        // Extraer los flags de los primeros 2 bytes
+        val flags = data[0].toInt() or (data[1].toInt() shl 8)
+        var nextPosition = 4 // La velocidad está en la posición 2 y 3, así que comenzamos en 4
+
+        // Procesar la velocidad (siempre presente)
+        val speed = (data[2].toInt() and 0xFF or ((data[3].toInt() and 0xFF) shl 8)) / 100.0f
+        currentSpeed = speed
+        Log.i(TAG, "Velocidad: $speed Km/h")
+
+        // Procesar otros valores basados en los flags activados
+        if ((flags and (1 shl 1)) != 0) nextPosition += 2 // Velocidad promedio
+        if ((flags and (1 shl 2)) != 0) { // Distancia total
+            val distanceRaw = (data[nextPosition].toInt() and 0xFF) or
+                    ((data[nextPosition + 1].toInt() and 0xFF) shl 8) or
+                    ((data[nextPosition + 2].toInt() and 0xFF) shl 16)
+
+            // Convertir la distancia a metros asumiendo que está en decímetros o centésimas de metros
+            val distance = distanceRaw / 1000.0f // o / 100.0f según la escala correcta
+            Log.i(TAG, "Distancia total: $distance km")
+            nextPosition += 3
+        }
+        if ((flags and (1 shl 3)) != 0) { // Inclinación
+            val inclinationRaw = (data[nextPosition].toInt() and 0xFF) or ((data[nextPosition + 1].toInt() and 0xFF) shl 8)
+            val inclination = inclinationRaw.toShort() / 10.0f // Convertir a un short para manejar números con signo y luego dividir entre 10
+            currentInclination = inclination
+            Log.i(TAG, "Inclinación: $inclination%")
+            nextPosition += 2
+        }
+        if ((flags and (1 shl 7)) != 0) { // Calorías
+            val calories = data[nextPosition].toInt() and 0xFF
+            Log.i(TAG, "Calorías quemadas: $calories")
+            nextPosition += 2
+        }
+        if ((flags and (1 shl 8)) != 0) { // Frecuencia cardíaca
+            val heartRate = data[nextPosition].toInt() and 0xFF
+            Log.i(TAG, "Calorias: $heartRate kcal")
+            nextPosition += 1
+        }
+        if (data.size > 17) {
+            val heartRate = data[16].toInt() and 0xFF
+            Log.i(TAG, "Frecuencia cardíaca: $heartRate BPM")
+        }
+
+        // Extraer el tiempo de los bytes 18 y 19 y convertir a minutos
+        if (data.size > 18) {
+            val timeRaw = (data[17].toInt() and 0xFF) or ((data[18].toInt() and 0xFF) shl 8)
+            val timeInMinutes = timeRaw / 60 // Convertir segundos a minutos
+            val remainingSeconds = timeRaw % 60 // Segundos restantes
+            Log.i(TAG, "Tiempo total: $timeInMinutes minutos y $remainingSeconds segundos")
         }
     }
 
