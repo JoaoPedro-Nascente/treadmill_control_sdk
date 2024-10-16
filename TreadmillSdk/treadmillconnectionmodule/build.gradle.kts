@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.treadmillsdk"
+    namespace = "com.example.treadmillconnectionmodule"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.treadmillsdk"
+        applicationId = "com.example.treadmillconnectionmodule"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -59,7 +59,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -67,5 +66,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation(project(":treadmillConnectionLibrary"))
 }

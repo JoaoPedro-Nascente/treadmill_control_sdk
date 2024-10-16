@@ -1,28 +1,18 @@
-package com.example.treadmillsdk
+package com.example.treadmillconnectionmodule
 
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattDescriptor
-import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothProfile
 import android.content.Context
-import android.os.Looper
 import android.util.Log
-import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
 import java.util.UUID
-import java.util.logging.Handler
 
 class TreadmillConnection {
     private val TAG = "BluetoothLe"
-    private var bluetoothAdapter: BluetoothAdapter? = null
-    private var scanning = false
-    private val handler = android.os.Handler(Looper.getMainLooper())
     private var bluetoothGatt: BluetoothGatt? = null
-    private val SCAN_PERIOD: Long = 10000 // 10 segundos
 
     //UUIDs para servicos e caracteristicas fitness machine
     private val FITNESS_MACHINE_SERVICE_UUID = UUID.fromString("00001826-0000-1000-8000-00805f9b34fb")
@@ -233,5 +223,17 @@ class TreadmillConnection {
 
     fun getTreadmillInclination(): Float {
         return currentInclination
+    }
+
+    fun getTreadmillActivityTime(): Int {
+        return timeInSeconds
+    }
+
+    fun getTreadmillTotalCalories(): Int {
+        return totalCalories
+    }
+
+    fun getTreadmillTotalDistance(): Float {
+        return totalDistance
     }
 }

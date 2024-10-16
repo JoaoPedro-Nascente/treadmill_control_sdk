@@ -1,172 +1,57 @@
-package com.example.treadmillsdk
+package com.example.treadmillconnectionlibrary
 
 import android.Manifest
 import android.app.Activity
-import android.bluetooth.*
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothGatt
+import android.bluetooth.BluetoothGattCallback
+import android.bluetooth.BluetoothGattCharacteristic
+import android.bluetooth.BluetoothGattDescriptor
+import android.bluetooth.BluetoothManager
+import android.bluetooth.BluetoothProfile
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Bundle
-import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.widget.Button
-import android.widget.ImageButton
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import java.util.*
+import androidx.core.content.ContextCompat.getSystemService
+import java.util.UUID
+import java.util.logging.Handler
 
-class MainActivity : Activity() {
-    private val TAG = "BluetoothLE"
-    private var bluetoothAdapter: BluetoothAdapter? = null
-    private var scanning = false
-    private val handler = Handler(Looper.getMainLooper())
-    private var bluetoothGatt: BluetoothGatt? = null
-    private val SCAN_PERIOD: Long = 10000 // 10 segundos
+class TreadmillConnection {
     private val PERMISSIONS_REQUEST_CODE = 1
+    private val TAG = "BluetoothLe"
+    private var scanning = false
+    private val handler = android.os.Handler(Looper.getMainLooper())
+    private val SCAN_PERIOD: Long = 10000 // 10 seconds
+    private var bluetoothAdapter: BluetoothAdapter? = null
+    private var bluetoothGatt: BluetoothGatt? = null
 
-    // UUIDs para o serviço e características do FTMS
+    //UUIDs para servicos e caracteristicas fitness machine
     private val FITNESS_MACHINE_SERVICE_UUID = UUID.fromString("00001826-0000-1000-8000-00805f9b34fb")
     private val FITNESS_MACHINE_CONTROL_POINT_UUID = UUID.fromString("00002AD9-0000-1000-8000-00805f9b34fb")
     private val TREADMILL_DATA_CHAR_UUID = UUID.fromString("00002acd-0000-1000-8000-00805f9b34fb")
 
-    // Variáveis de controle
-    private var currentSpeed: Float = 1.0f // Velocidade inicial em Km/h
-    private var currentInclination: Float = 0.0f // Inclinação inicial em %
+    // Variaveis de controle
+    private var currentSpeed = 1.0f
+    private var currentInclination = 0.0f
+    private var totalDistance = 0.0f
+    private var totalLaps = 0
+    private var totalCalories = 0
+    private var currentHeartRate = 0
+    private var timeInSeconds = 0
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        // Configuração dos botões
-        val btnConnectTreadmill = findViewById<Button>(R.id.btn_connect)
-        val btnStartTreadmill = findViewById<Button>(R.id.btn_start)
-        val btnStopTreadmill = findViewById<Button>(R.id.btn_stop)
-
-        val btnSpeedUp = findViewById<Button>(R.id.btn_speedup)
-        val btnSpeedDown = findViewById<Button>(R.id.btn_speeddown)
-        val btnSetSpeed15 = findViewById<Button>(R.id.btn_setspeed15)
-        val btnSetSpeed12 = findViewById<Button>(R.id.btn_setspeed12)
-        val btnSetSpeed9 = findViewById<Button>(R.id.btn_setspeed9)
-        val btnSetSpeed6 = findViewById<Button>(R.id.btn_setspeed6)
-
-        val btnInclinationUp = findViewById<Button>(R.id.btn_inclinationup)
-        val btnInclinationDown = findViewById<Button>(R.id.btn_inclinationdown)
-        val btnSetInclination15 = findViewById<Button>(R.id.btn_setinclination15)
-        val btnSetInclination12 = findViewById<Button>(R.id.btn_setinclination12)
-        val btnSetInclination9 = findViewById<Button>(R.id.btn_setinclination9)
-        val btnSetInclination6 = findViewById<Button>(R.id.btn_setinclination6)
-
-        // Controles de inicio e pausa
-        btnConnectTreadmill.setOnClickListener {
-            checkBluetoothPermissions()
-        }
-
-        btnStartTreadmill.setOnClickListener {
-            startTreadmill()
-        }
-
-        btnStopTreadmill.setOnClickListener {
-            stopTreadmill()
-
-            currentSpeed = 1.0f
-            currentInclination = 0.0f
-        }
-
-        // Controles de velocidade
-        btnSpeedUp.setOnClickListener {
-            var speed = currentSpeed + 0.1f
-            //currentSpeed += 0.5f // Aumenta a velocidade em 0.5 Km/h
-            if(speed > 18.0f){
-                speed = 18.0f
-            }
-            setTreadmillSpeed(speed)
-            Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
-        }
-
-        btnSpeedDown.setOnClickListener {
-            var speed = currentSpeed - 0.1f
-            //currentSpeed -= 0.5f // Diminui a velocidade em 0.5 Km/h
-            if(speed < 1.0f){
-                speed = 1.0f
-            }
-            setTreadmillSpeed(speed)
-            Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
-        }
-
-        btnSetSpeed15.setOnClickListener {
-            val speed = 15.0f
-            setTreadmillSpeed(speed)
-            Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
-        }
-
-        btnSetSpeed12.setOnClickListener {
-            val speed = 12.0f
-            setTreadmillSpeed(speed)
-            Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
-        }
-
-        btnSetSpeed9.setOnClickListener {
-            val speed = 9.0f
-            setTreadmillSpeed(speed)
-            Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
-        }
-
-        btnSetSpeed6.setOnClickListener {
-            val speed = 6.0f
-            setTreadmillSpeed(speed)
-            Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
-        }
-
-
-        // Controles de inclinação
-        btnInclinationUp.setOnClickListener {
-            var inclination = currentInclination + 1.0f // Aumenta a inclinação em 1%
-            if(inclination > 15.0f){
-                inclination = 15.0f
-            }
-            setTreadmillInclination(inclination)
-            Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
-        }
-
-        btnInclinationDown.setOnClickListener {
-            var inclination = currentInclination - 1.0f // Diminui a inclinação em 1%
-            if(inclination < 0.0f){
-                inclination = 0.0f
-            }
-            setTreadmillInclination(inclination)
-            Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
-        }
-
-        btnSetInclination15.setOnClickListener {
-            val inclination = 15.0f
-            setTreadmillInclination(inclination)
-            Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
-        }
-
-        btnSetInclination12.setOnClickListener {
-            val inclination = 12.0f
-            setTreadmillInclination(inclination)
-            Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
-        }
-
-        btnSetInclination9.setOnClickListener {
-            val inclination = 9.0f
-            setTreadmillInclination(inclination)
-            Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
-        }
-
-        btnSetInclination6.setOnClickListener {
-            val inclination = 6.0f
-            setTreadmillInclination(inclination)
-            Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
-        }
+    fun getFitnessDevices(context: Context, leScanCallback: ScanCallback){
+        checkBluetoothPermissions(context, leScanCallback)
     }
 
     // Verificar e solicitar permissões
-    private fun checkBluetoothPermissions() {
+    private fun checkBluetoothPermissions(context: Context, leScanCallback: ScanCallback) {
         val permissions = arrayOf(
             Manifest.permission.BLUETOOTH,
             Manifest.permission.BLUETOOTH_ADMIN,
@@ -176,35 +61,44 @@ class MainActivity : Activity() {
         )
 
         val permissionsNeeded = permissions.filter {
-            ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED
         }
 
         if (permissionsNeeded.isNotEmpty()) {
             // Solicitar permissões ao usuário
-            ActivityCompat.requestPermissions(this, permissionsNeeded.toTypedArray(), PERMISSIONS_REQUEST_CODE)
+            val activity = context as? Activity
+            if(activity != null) {
+                ActivityCompat.requestPermissions(
+                    context,
+                    permissionsNeeded.toTypedArray(),
+                    PERMISSIONS_REQUEST_CODE
+                )
+            } else {
+                Log.e(TAG, "Erro: o context fornecido nao e uma activity.")
+            }
         } else {
             // Permissões já concedidas, iniciar configuração do Bluetooth
-            setupBluetooth()
+            setupBluetooth(context, leScanCallback)
         }
     }
 
     // Configuração do Bluetooth após as permissões serem concedidas
-    private fun setupBluetooth() {
-        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+    private fun setupBluetooth(context: Context, leScanCallback: ScanCallback) {
+        val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothAdapter = bluetoothManager.adapter
 
         if (bluetoothAdapter == null || !bluetoothAdapter!!.isEnabled) {
             Log.e(TAG, "Bluetooth não está habilitado.")
-            Toast.makeText(this, "Bluetooth não está habilitado", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Bluetooth não está habilitado", Toast.LENGTH_SHORT).show()
             return
         }
 
         // Iniciar escaneamento de dispositivos BLE
-        startScanningForDevices()
+        startScanningForDevices(context, leScanCallback)
     }
 
     // Iniciar escaneamento de dispositivos BLE
-    private fun startScanningForDevices() {
+    private fun startScanningForDevices(context: Context, leScanCallback: ScanCallback) {
         val bluetoothLeScanner = bluetoothAdapter?.bluetoothLeScanner
 
         try {
@@ -228,40 +122,22 @@ class MainActivity : Activity() {
             }
         } catch (e: SecurityException) {
             Log.e(TAG, "Erro de permissão Bluetooth: ${e.message}")
-            Toast.makeText(this, "Erro de permissão Bluetooth. Verifique suas configurações.", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-
-    // Callback chamado quando um dispositivo BLE é descoberto
-    private val leScanCallback = object : ScanCallback() {
-        override fun onScanResult(callbackType: Int, result: ScanResult?) {
-            result?.let {
-                val device = it.device
-                Log.d(TAG, "Dispositivo encontrado: ${device.name} - Endereço: ${device.address}")
-
-                // Verificar se o dispositivo é a esteira alvo
-                if (device.name == "FS-34EAB5") {
-                    Log.d(TAG, "Dispositivo alvo encontrado: ${device.name}")
-
-                    // Parar o escaneamento
-                    startScanningForDevices()
-
-                    // Conectar ao dispositivo
-                    connectToDevice(device)
-                }
-            }
+            Toast.makeText(context, "Erro de permissão Bluetooth. Verifique suas configurações.", Toast.LENGTH_SHORT).show()
         }
     }
 
     // Método para conectar ao dispositivo
-    private fun connectToDevice(device: BluetoothDevice) {
+    private fun connectToDevice(device: BluetoothDevice, context: Context) {
         try {
             Log.d(TAG, "Tentando conectar ao dispositivo: ${device.name} - ${device.address}")
-            bluetoothGatt = device.connectGatt(this, false, gattCallback)
+            bluetoothGatt = device.connectGatt(context, false, gattCallback)
         } catch (e: SecurityException) {
             Log.e(TAG, "Erro de permissão Bluetooth ao tentar conectar: ${e.message}")
         }
+    }
+
+    fun stopScanningFitnessMachineDevices(){
+
     }
 
     // Callback de conexão BluetoothGatt
@@ -340,6 +216,7 @@ class MainActivity : Activity() {
 
             // Convertir la distancia a metros asumiendo que está en decímetros o centésimas de metros
             val distance = distanceRaw / 1000.0f // o / 100.0f según la escala correcta
+            totalDistance = distance
             Log.i(TAG, "Distancia total: $distance km")
             nextPosition += 3
         }
@@ -351,17 +228,20 @@ class MainActivity : Activity() {
             nextPosition += 2
         }
         if ((flags and (1 shl 7)) != 0) { // Calorías
-            val calories = data[nextPosition].toInt() and 0xFF
-            Log.i(TAG, "Calorías quemadas: $calories")
+            val laps = data[nextPosition].toInt() and 0xFF
+            totalLaps = laps
+            Log.i(TAG, "Numero de voltas: $laps")
             nextPosition += 2
         }
         if ((flags and (1 shl 8)) != 0) { // Frecuencia cardíaca
-            val heartRate = data[nextPosition].toInt() and 0xFF
-            Log.i(TAG, "Calorias: $heartRate kcal")
+            val calories = data[nextPosition].toInt() and 0xFF
+            totalCalories = calories
+            Log.i(TAG, "Calorias: $calories kcal")
             nextPosition += 1
         }
         if (data.size > 17) {
             val heartRate = data[16].toInt() and 0xFF
+            currentHeartRate = heartRate
             Log.i(TAG, "Frecuencia cardíaca: $heartRate BPM")
         }
 
@@ -370,6 +250,7 @@ class MainActivity : Activity() {
             val timeRaw = (data[17].toInt() and 0xFF) or ((data[18].toInt() and 0xFF) shl 8)
             val timeInMinutes = timeRaw / 60 // Convertir segundos a minutos
             val remainingSeconds = timeRaw % 60 // Segundos restantes
+            timeInSeconds = timeRaw
             Log.i(TAG, "Tiempo total: $timeInMinutes minutos y $remainingSeconds segundos")
         }
     }
@@ -436,5 +317,25 @@ class MainActivity : Activity() {
                 Log.w(TAG, "Característica de controle não encontrada.")
             }
         }
+    }
+
+    fun getTreadmillSpeed(): Float {
+        return currentSpeed
+    }
+
+    fun getTreadmillInclination(): Float {
+        return currentInclination
+    }
+
+    fun getTreadmillActivityTime(): Int {
+        return timeInSeconds
+    }
+
+    fun getTreadmillTotalCalories(): Int {
+        return totalCalories
+    }
+
+    fun getTreadmillTotalDistance(): Float {
+        return totalDistance
     }
 }
