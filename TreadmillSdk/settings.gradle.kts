@@ -21,5 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "TreadmillSdk"
 include(":app")
-include(":treadmillconnectionmodule")
 include(":treadmillConnectionLibrary")

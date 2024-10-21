@@ -11,7 +11,6 @@ import android.bluetooth.BluetoothGattDescriptor
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothProfile
 import android.bluetooth.le.ScanCallback
-import android.bluetooth.le.ScanResult
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Looper
@@ -19,9 +18,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import java.util.UUID
-import java.util.logging.Handler
 
 class TreadmillConnection {
     private val PERMISSIONS_REQUEST_CODE = 1
@@ -98,7 +95,7 @@ class TreadmillConnection {
     }
 
     // Iniciar escaneamento de dispositivos BLE
-    private fun startScanningForDevices(context: Context, leScanCallback: ScanCallback) {
+    private fun startScanningForDevices(context: Context?, leScanCallback: ScanCallback?) {
         val bluetoothLeScanner = bluetoothAdapter?.bluetoothLeScanner
 
         try {
@@ -127,7 +124,7 @@ class TreadmillConnection {
     }
 
     // Método para conectar ao dispositivo
-    private fun connectToDevice(device: BluetoothDevice, context: Context) {
+    fun connectToDevice(device: BluetoothDevice, context: Context) {
         try {
             Log.d(TAG, "Tentando conectar ao dispositivo: ${device.name} - ${device.address}")
             bluetoothGatt = device.connectGatt(context, false, gattCallback)
@@ -137,7 +134,7 @@ class TreadmillConnection {
     }
 
     fun stopScanningFitnessMachineDevices(){
-
+        startScanningForDevices(null, null)
     }
 
     // Callback de conexão BluetoothGatt
