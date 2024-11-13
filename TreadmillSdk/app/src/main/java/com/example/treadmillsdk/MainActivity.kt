@@ -33,14 +33,29 @@ class MainActivity : Activity() {
     private val TREADMILL_DATA_CHAR_UUID = UUID.fromString("00002acd-0000-1000-8000-00805f9b34fb")
 
     // Variáveis de controle
-    private var currentSpeed: Float = 1.0f // Velocidade inicial em Km/h
+    private var currentSpeed: Float = 0.0f // Velocidade inicial em Km/h
     private var currentInclination: Float = 0.0f // Inclinação inicial em %
+
+    private lateinit var activityTimeView: Button
+    private lateinit var hrView: Button
+    private lateinit var speedView: Button
+    private lateinit var inclinationView: Button
+
+    private lateinit var polar: PolarConnection
+    private val polarDeviceId = "C621D624"//"C61E8A23"
+
+    private val influxConnection: InfluxDBConnection = InfluxDBConnection()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         // Configuração dos botões
+        val connectPolar = findViewById<Button>(R.id.btn_connect_polar)
+        hrView = findViewById<Button>(R.id.hrView)
+
+        activityTimeView = findViewById<Button>(R.id.activtyTimeView)
+
         val btnConnectTreadmill = findViewById<Button>(R.id.btn_connect)
         val btnStartTreadmill = findViewById<Button>(R.id.btn_start)
         val btnStopTreadmill = findViewById<Button>(R.id.btn_stop)
@@ -51,6 +66,7 @@ class MainActivity : Activity() {
         val btnSetSpeed12 = findViewById<Button>(R.id.btn_setspeed12)
         val btnSetSpeed9 = findViewById<Button>(R.id.btn_setspeed9)
         val btnSetSpeed6 = findViewById<Button>(R.id.btn_setspeed6)
+        speedView = findViewById<Button>(R.id.speedView)
 
         val btnInclinationUp = findViewById<Button>(R.id.btn_inclinationup)
         val btnInclinationDown = findViewById<Button>(R.id.btn_inclinationdown)
@@ -58,10 +74,14 @@ class MainActivity : Activity() {
         val btnSetInclination12 = findViewById<Button>(R.id.btn_setinclination12)
         val btnSetInclination9 = findViewById<Button>(R.id.btn_setinclination9)
         val btnSetInclination6 = findViewById<Button>(R.id.btn_setinclination6)
+        inclinationView = findViewById<Button>(R.id.inclinationView)
+
+        polar = PolarConnection(applicationContext, influxConnection, hrView)
 
         // Controles de inicio e pausa
         btnConnectTreadmill.setOnClickListener {
             checkBluetoothPermissions()
+            btnConnectTreadmill.text = "Esteira Conectada"
         }
 
         btnStartTreadmill.setOnClickListener {
@@ -71,8 +91,23 @@ class MainActivity : Activity() {
         btnStopTreadmill.setOnClickListener {
             stopTreadmill()
 
-            currentSpeed = 1.0f
+            currentSpeed = 0.0f
             currentInclination = 0.0f
+        }
+
+        // Controles de Polar
+        connectPolar.setOnClickListener {
+            if(polar.getDeviceConnected()){
+                polar.connectToPolar(polarDeviceId)
+
+                val text = "Conectar Polar"
+                connectPolar.text = text
+            } else {
+                polar.connectToPolar(polarDeviceId)
+
+                val text = "Conectado"
+                connectPolar.text = text
+            }
         }
 
         // Controles de velocidade
@@ -83,7 +118,7 @@ class MainActivity : Activity() {
                 speed = 18.0f
             }
             setTreadmillSpeed(speed)
-            Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
         }
 
         btnSpeedDown.setOnClickListener {
@@ -93,31 +128,31 @@ class MainActivity : Activity() {
                 speed = 1.0f
             }
             setTreadmillSpeed(speed)
-            Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
         }
 
         btnSetSpeed15.setOnClickListener {
             val speed = 15.0f
             setTreadmillSpeed(speed)
-            Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
         }
 
         btnSetSpeed12.setOnClickListener {
             val speed = 12.0f
             setTreadmillSpeed(speed)
-            Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
         }
 
         btnSetSpeed9.setOnClickListener {
             val speed = 9.0f
             setTreadmillSpeed(speed)
-            Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
         }
 
         btnSetSpeed6.setOnClickListener {
             val speed = 6.0f
             setTreadmillSpeed(speed)
-            Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Velocidade ajustada para $speed Km/h", Toast.LENGTH_SHORT).show()
         }
 
 
@@ -128,7 +163,7 @@ class MainActivity : Activity() {
                 inclination = 15.0f
             }
             setTreadmillInclination(inclination)
-            Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
         }
 
         btnInclinationDown.setOnClickListener {
@@ -137,31 +172,31 @@ class MainActivity : Activity() {
                 inclination = 0.0f
             }
             setTreadmillInclination(inclination)
-            Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
         }
 
         btnSetInclination15.setOnClickListener {
             val inclination = 15.0f
             setTreadmillInclination(inclination)
-            Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
         }
 
         btnSetInclination12.setOnClickListener {
             val inclination = 12.0f
             setTreadmillInclination(inclination)
-            Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
         }
 
         btnSetInclination9.setOnClickListener {
             val inclination = 9.0f
             setTreadmillInclination(inclination)
-            Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
         }
 
         btnSetInclination6.setOnClickListener {
             val inclination = 6.0f
             setTreadmillInclination(inclination)
-            Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Inclinação ajustada para $inclination%", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -172,7 +207,8 @@ class MainActivity : Activity() {
             Manifest.permission.BLUETOOTH_ADMIN,
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.BLUETOOTH_SCAN,
-            Manifest.permission.BLUETOOTH_CONNECT
+            Manifest.permission.BLUETOOTH_CONNECT,
+            Manifest.permission.INTERNET
         )
 
         val permissionsNeeded = permissions.filter {
@@ -274,6 +310,8 @@ class MainActivity : Activity() {
                 }
                 BluetoothProfile.STATE_DISCONNECTED -> {
                     Log.i(TAG, "Desconectado do dispositivo GATT.")
+                    currentSpeed = 0.0f
+                    currentInclination = 0.0f
                 }
             }
         }
@@ -330,6 +368,8 @@ class MainActivity : Activity() {
         val speed = (data[2].toInt() and 0xFF or ((data[3].toInt() and 0xFF) shl 8)) / 100.0f
         currentSpeed = speed
         Log.i(TAG, "Velocidad: $speed Km/h")
+        val textToShow = "$speed KM/H"
+        speedView.text = textToShow
 
         // Procesar otros valores basados en los flags activados
         if ((flags and (1 shl 1)) != 0) nextPosition += 2 // Velocidad promedio
@@ -348,6 +388,8 @@ class MainActivity : Activity() {
             val inclination = inclinationRaw.toShort() / 10.0f // Convertir a un short para manejar números con signo y luego dividir entre 10
             currentInclination = inclination
             Log.i(TAG, "Inclinación: $inclination%")
+            val textToShow = "$inclination%"
+            inclinationView.text = textToShow
             nextPosition += 2
         }
         if ((flags and (1 shl 7)) != 0) { // Calorías
@@ -370,6 +412,8 @@ class MainActivity : Activity() {
             val timeRaw = (data[17].toInt() and 0xFF) or ((data[18].toInt() and 0xFF) shl 8)
             val timeInMinutes = timeRaw / 60 // Convertir segundos a minutos
             val remainingSeconds = timeRaw % 60 // Segundos restantes
+            val textToShow = "$timeInMinutes:$remainingSeconds"
+            activityTimeView.text = textToShow
             Log.i(TAG, "Tiempo total: $timeInMinutes minutos y $remainingSeconds segundos")
         }
     }
@@ -436,5 +480,11 @@ class MainActivity : Activity() {
                 Log.w(TAG, "Característica de controle não encontrada.")
             }
         }
+    }
+
+    override fun onDestroy(){
+        super.onDestroy()
+        influxConnection.closeConnection()
+        polar.destroy()
     }
 }
